@@ -68,7 +68,7 @@ We will set the number of `Tracker` instances to two.
 This means that there will be two separate `Trackers` running, each taking turns reading what the Parser outputs.
 You want to do this if a single `Parser` can output more quickly than a single `Tracker` can process.
 
-``` {.sourceCode .java}
+```java
 public class DiskPerformanceFlow implements Flow {
 
   @Override
@@ -90,7 +90,7 @@ public class DiskPerformanceFlow implements Flow {
 
 Next we create the `Parser` Flowlet, which reads from the Stream and outputs the disk ID if the event was a slow read.
 
-``` {.sourceCode .java}
+```java
 public class Parser extends AbstractFlowlet {
   private static final long SLOW_THRESHOLD = 100;
 
@@ -114,7 +114,7 @@ public class Parser extends AbstractFlowlet {
 Next we create the `Tracker` Flowlet, which reads the output of the `Parser` Flowlet, and updates how many times each disk reported a slow read.
 If a disk records too many slow reads, the `Tracker` places it in a separate dataset used to track slow disks that may need to be replaced soon.
 
-``` {.sourceCode .java}
+```java
 public class Tracker extends AbstractFlowlet {
   // intentionally set very low for illustrative purposes
   private static final long FLAG_THRESHOLD = 3;
@@ -139,7 +139,7 @@ public class Tracker extends AbstractFlowlet {
 
 Finally, we implement a Service that exposes a RESTful API used to display the slow disks that need to be replaced soon:
 
-``` {.sourceCode .java}
+```java
 public class DiskPerformanceService extends AbstractHttpServiceHandler {
   @UseDataSet("slowDisks")
   private KeyValueTable slowDisksTable;
@@ -169,7 +169,7 @@ There is overhead in supplying this guarantee, so we may want to process multipl
 With a batch size of 10, we will pay the cost of the overhead just once for every 10 events instead of 10 times for 10 events.
 Telling a flowlet to process its input in batches of 10 is as simple as adding the Batch annotation to the process method.  
 
-``` {.sourceCode .java}
+```java
 public class Tracker extends AbstractFlowlet {
   ...
 
@@ -205,9 +205,9 @@ One way to solve this problem is to make sure that no disks that go to Tracker1 
 For example, all events for disk1 should go only to Tracker1, and never should go to Tracker2.
 This is done by using hash partitioning instead of round-robin.
 This is easy in CDAP and can be done in two lines.
-When emitting in the Parser, a partition id and key must be given in addition to the data being emitted.
+When emitting in the Parser, a partition ID and key must be given in addition to the data being emitted.
 
-``` {.sourceCode .java}
+```java
 public class Parser extends AbstractFlowlet {
   ...
 
@@ -221,9 +221,9 @@ public class Parser extends AbstractFlowlet {
 }
 ```
 
-In the Tracker, you simply add the HashPartition annotation with the partition id.
+In the Tracker, you simply add the HashPartition annotation with the partition ID.
 
-``` {.sourceCode .java}
+```java
 public class Tracker extends AbstractFlowlet {
   ...
 
@@ -239,7 +239,7 @@ public class Tracker extends AbstractFlowlet {
 Now we can enjoy the benefits of larger batch sizes without worrying about wasted work due to write conflicts.
 With batching and hash partitioning, our Parser and Tracker classes have changed just three lines with their final versions below:
 
-``` {.sourceCode .java}
+```java
 public class Parser extends AbstractFlowlet {
   private static final long SLOW_THRESHOLD = 1000;
 
