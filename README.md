@@ -1,4 +1,4 @@
-Realtime data processing with a flow
+Realtime Data Processing with a Flow
 =====================================
 In this guide you will learn how to process data in realtime with the Cask Data Application Platform (CDAP).
 You will also learn how easy it is to scale out applications on CDAP.
