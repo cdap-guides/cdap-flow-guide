@@ -4,8 +4,7 @@ import co.cask.cdap.api.flow.Flow;
 import co.cask.cdap.api.flow.FlowSpecification;
 
 /**
- * Flow that reads disk metrics from a stream, categorizes read times as one of fast, normal, or slow, and tracks
- * how often each disk is fast, normal, and slow.
+ * Flow that reads disk metrics from a stream, and tracks which disks are slow.
  */
 public class DiskPerformanceFlow implements Flow {
 

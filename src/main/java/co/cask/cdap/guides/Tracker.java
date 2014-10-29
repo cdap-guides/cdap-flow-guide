@@ -9,8 +9,8 @@ import co.cask.cdap.api.dataset.lib.KeyValueTable;
 import co.cask.cdap.api.flow.flowlet.AbstractFlowlet;
 
 /**
- * Receives the id of a disk that recorded a slow read, updating how many times the disk has been slow and
- * storing the disk id in a separate dataset if it has been slow very often, indicating that it may be time to replace
+ * Receives the ID of a disk that recorded a slow read, updating how many times the disk has been slow and
+ * storing the disk ID in a separate dataset if it has been slow very often, indicating that it may be time to replace
  * the disk.
  */
 public class Tracker extends AbstractFlowlet {

@@ -1,6 +1,6 @@
-Real-time data processing with a flow
+Realtime data processing with a flow
 =====================================
-In this guide you will learn how to process data in real-time with the Cask Data Application Platform (CDAP).
+In this guide you will learn how to process data in realtime with the Cask Data Application Platform (CDAP).
 You will also learn how easy it is to scale out applications on CDAP.
 
 What You Will Build
@@ -8,47 +8,46 @@ What You Will Build
 You will build a CDAP application that processes disk usage information across machines in a large company in order
 flag disks that may need to be replaced soon. You will:
 
--   Build a [Flow](http://docs.cask.co/cdap/current/en/dev-guide.html#flows) to process disk usage data in real-time
--   Use [Datasets](http://docs.cask.co/cdap/current/en/dev-guide.html#datasets) to store the number of slow reads per disk and track slow disks that may need to be replaced soon
--   Build a [Service](http://docs.cask.co/cdap/current/en/dev-guide.html#services) to get slow disks that should be replaced soon
+-   Build a [Flow](http://docs.cdap.io/cdap/current/en/developer-guide/building-blocks/flows-flowlets/flows.html) to process disk usage data in realtime;
+-   Use [Datasets](http://docs.cdap.io/cdap/current/en/developer-guide/building-blocks/datasets/index.html) to store the number of slow reads per disk and track slow disks that may need to be replaced soon; and
+-   Build a [Service](http://docs.cdap.io/cdap/current/en/developer-guide/building-blocks/services.html) to display the slow disks that should be replaced.
 
 
 What you will need
 ------------------
 -   [JDK 6 or JDK 7](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
 -   [Apache Maven 3.0+](http://maven.apache.org/download.cgi)
--   [CDAP SDK](http://docs.cdap.io/cdap/current/en/getstarted.html#download-and-setup)
+-   [CDAP SDK](http://docs.cdap.io/cdap/current/en/developer-guide/getting-started/standalone/index.html)
 
 Let’s Build It!
 ---------------
-The following sections will guide you through implementing a real-time data processing application from scratch.
+The following sections will guide you through implementing a realtime data processing application from scratch.
 If you want to deploy and run the application right away, you can clone the sources from this GitHub repository.
 In that case, feel free to skip the following two sections and jump directly to the
 [Build and Run Application](#build-and-run-application) section.
 
 ### Application Design
 
-In CDAP, you process data in real-time by implementing a Flow.  In this example the flow consists of two flowlets.
-The Parser flowlet consumes data from a DiskReadTimes stream, parses the event, and outputs the disk id if the event was a slow disk read.
-The Tracker flowlet reads the disk id emitted by the Parser and updates a count for how often that disk has recorded a slow read.
-In addition, if that disk has recorded too many slow reads, the disk id is written to a separate dataset that keeps track of all
-disks that should soon be replaced.
+In CDAP, you process data in realtime by implementing a Flow.  In this example the Flow consists of two Flowlets.
+The `Parser` Flowlet consumes data from a `DiskReadTimes` Stream, parses the event, and outputs the disk ID if the event was a slow disk read.
+The `Tracker` Flowlet reads the disk ID emitted by the `Parser`, and updates a count of how often that disk has recorded a slow read.
+If a disk has recorded too many slow reads, the disk ID is written to a separate dataset that tracks all disks that should soon be replaced.
 
 ### Implementation
 
-The recommended way to build a CDAP application from scratch is to use a maven project.
+The recommended way to build a CDAP application from scratch is to use a Maven project.
 Use the following directory structure (you’ll find contents of the files below):
 
     ./pom.xml
-    ./src/main/java/co/cask/cdap/guide/DiskPerformanceApp.java
-    ./src/main/java/co/cask/cdap/guide/DiskPerformanceFlow.java
-    ./src/main/java/co/cask/cdap/guide/DiskPerformanceService.java
-    ./src/main/java/co/cask/cdap/guide/Parser.java
-    ./src/main/java/co/cask/cdap/guide/Tracker.java
+    ./src/main/java/co/cask/cdap/guides/DiskPerformanceApp.java
+    ./src/main/java/co/cask/cdap/guides/DiskPerformanceFlow.java
+    ./src/main/java/co/cask/cdap/guides/DiskPerformanceService.java
+    ./src/main/java/co/cask/cdap/guides/Parser.java
+    ./src/main/java/co/cask/cdap/guides/Tracker.java
 
 First create the application, which contains a stream, flow, and datasets.
 
-``` {.sourceCode .java}
+```java
 public class DiskPerformanceApp extends AbstractApplication {
 
   @Override
@@ -63,11 +62,11 @@ public class DiskPerformanceApp extends AbstractApplication {
 }
 ```
 
-Next, we create a Flow, which is composed of two flowlets, the Parser and Tracker.
-The parser reads from the stream, and the counter reads from the parser.
-We will set the number of Tracker instances to 2.
-This means that there will be 2 separate Trackers running, all taking turns reading what the Parser outputs.
-You want to do this if a single Parser can output more quickly than a single Tracker can process.
+Next, we create a Flow, which is composed of two Flowlets, the `Parser` and `Tracker`.
+The parser reads from the stream, and the tracker then reads from the parser.
+We will set the number of `Tracker` instances to two.
+This means that there will be two separate `Trackers` running, each taking turns reading what the Parser outputs.
+You want to do this if a single `Parser` can output more quickly than a single `Tracker` can process.
 
 ``` {.sourceCode .java}
 public class DiskPerformanceFlow implements Flow {
@@ -89,7 +88,7 @@ public class DiskPerformanceFlow implements Flow {
 }
 ```
 
-Next we create the Parser flowlet, which reads from the stream and outputs the disk id if the event was a slow read.
+Next we create the `Parser` Flowlet, which reads from the Stream and outputs the disk ID if the event was a slow read.
 
 ``` {.sourceCode .java}
 public class Parser extends AbstractFlowlet {
@@ -101,7 +100,7 @@ public class Parser extends AbstractFlowlet {
   public void process(StreamEvent diskMetrics) {
     String event = Charsets.UTF_8.decode(diskMetrics.getBody()).toString();
     // events are expected to have the following format:
-    // diskId operationTime(in microsec)
+    // diskId operationTime (in microseconds)
     String[] fields = event.split(" ", 2);
     String diskId = fields[0];
     long readTime = Long.parseLong(fields[1]);
@@ -112,8 +111,8 @@ public class Parser extends AbstractFlowlet {
 }
 ```
 
-Next we create the Tracker flowlet, which reads the output of the Parser flowlet and updates how many times each disk reported a slow read.
-If a disk records too many slow reads, the Tracker places it in a separate dataset used to track slow disks that may need to be replaced soon.
+Next we create the `Tracker` Flowlet, which reads the output of the `Parser` Flowlet, and updates how many times each disk reported a slow read.
+If a disk records too many slow reads, the `Tracker` places it in a separate dataset used to track slow disks that may need to be replaced soon.
 
 ``` {.sourceCode .java}
 public class Tracker extends AbstractFlowlet {
@@ -138,7 +137,7 @@ public class Tracker extends AbstractFlowlet {
 }
 ```
 
-Finally, we implement a Service that exposes a RESTful API used to get slow disks that need to be replaced soon:
+Finally, we implement a Service that exposes a RESTful API used to display the slow disks that need to be replaced soon:
 
 ``` {.sourceCode .java}
 public class DiskPerformanceService extends AbstractHttpServiceHandler {
@@ -183,7 +182,8 @@ public class Tracker extends AbstractFlowlet {
 ```
 
 So far, it might sound like batching is always better than not batching.
-To understand why this is not always the case, we must go back to the fact that we have 2 Trackers reading the output of the Parser.
+
+To understand why this is not always the case, we must go back to the fact that we have two Trackers reading the output of the Parser.
 By default, each Tracker takes turns reading from the Parser. This strategy is called round-robin.
 Suppose the Parser reads two slow disk reads for disk1.  It outputs “disk1” and again outputs “disk1”.
 Tracker1 takes the first “disk1” and Tracker2 takes the second “disk1”.
@@ -200,8 +200,9 @@ The chance that Tracker1 has a disk in its batch that also appears in Tracker2�
 This means that when they both go to update their counts, only one of their updates will go through, with the other needing to be replayed.
 This means the work that one Tracker did will be entirely wasted and retried again,
 which is much more costly with a big batch size because everything in the batch must be replayed.
-One way to solve this problem is to make sure that no disks that go to Tracker1 will go to Tracker2.
-For example, all events for disk1 go to Tracker1 and never go to Tracker2.
+
+One way to solve this problem is to make sure that no disks that go to Tracker1 ever go to Tracker2.
+For example, all events for disk1 should go only to Tracker1, and never should go to Tracker2.
 This is done by using hash partitioning instead of round-robin.
 This is easy in CDAP and can be done in two lines.
 When emitting in the Parser, a partition id and key must be given in addition to the data being emitted.
@@ -236,7 +237,7 @@ public class Tracker extends AbstractFlowlet {
 ```
 
 Now we can enjoy the benefits of larger batch sizes without worrying about wasted work due to write conflicts.
-With batching and hash partitioning, our Parser and Tracker classes have changed just 3 lines with their final versions below:
+With batching and hash partitioning, our Parser and Tracker classes have changed just three lines with their final versions below:
 
 ``` {.sourceCode .java}
 public class Parser extends AbstractFlowlet {
@@ -285,7 +286,7 @@ public class Tracker extends AbstractFlowlet {
 Build and Run Application
 -------------------------
 
-The DiskPerformanceApp can be built and packaged using standard Apache Maven commands:
+The DiskPerformanceApp can be built and packaged using the Apache Maven command:
 
     mvn clean package
 
@@ -294,7 +295,7 @@ If this is not the case, please add it:
 
     export PATH=$PATH:<CDAP home>/bin
 
-If you haven't started already CDAP standalone, start it with the following commands:
+If you haven't already started a standalone CDAP installation, start it with the command:
 
     cdap.sh start
 
@@ -306,7 +307,7 @@ Next we start the flow:
 
     cdap-cli.sh start flow DiskPerformanceApp.DiskPerformanceFlow
 
-Note that there is 1 instance of the parser flowlet running and 2 instances of the Tracker flowlet running:
+Note that there is one instance of the `Parser` Flowlet running and two instances of the `Tracker` Flowlet running:
 
     cdap-cli.sh get instances flowlet DiskPerformanceApp.DiskPerformanceFlow.parser
     1
@@ -314,7 +315,7 @@ Note that there is 1 instance of the parser flowlet running and 2 instances of t
     cdap-cli.sh get instances flowlet DiskPerformanceApp.DiskPerformanceFlow.tracker
     2
 
-We can scale out our application and increase the number of tracker flowlets to 4:
+We can scale out our application and increase the number of `Tracker` Flowlets to four:
 
     cdap-cli.sh set instances flowlet DiskPerformanceApp.DiskPerformanceFlow.tracker 4
 
@@ -333,7 +334,7 @@ Next we start the service:
 
     cdap-cli.sh start service DiskPerformanceApp.DiskPerformanceService
 
-The service exposes a REST API that allows us to get all slow disks and the timestamp at which they got flagged as a slow disk.
+The Service exposes a RESTful API that allows us to display all slow disks and the timestamp at which they were flagged as a slow disk.
 Make the request and note the output:
 
     curl http://localhost:10000/v2/apps/DiskPerformanceApp/services/DiskPerformanceService/methods/slowdisks && echo
@@ -343,12 +344,29 @@ Extend This Example
 -------------------
 To make this application more useful, you can extend it by:
 
--   Including disk type in the stream event and categorize a slow read based on the type of disk.
--   Passing your own custom java object through the flowlets instead of a string.
--   Adding an endpoint to the service that can remove a disk from the slowDisks table.
+-   Including the disk type in the Stream event and categorize a slow read based on the type of disk.
+-   Passing your own custom Java object through the Flowlets instead of a String.
+-   Adding an endpoint to the Service that can remove a disk from the `slowDisks` Dataset.
 -   Changing the logic so that 1000 normal disk read times counteract a slow disk read.
 -   Tracking additional disk metrics, such as write times, and use a combination of factors to determine whether or not a disk belongs in the slowDisks table.
 
 Share and Discuss!
 ------------------
-Have a question? Discuss at the [CDAP User Mailing List](https://groups.google.com/forum/#!forum/cdap-user)
+Have a question? Discuss at the [CDAP User Mailing List.](https://groups.google.com/forum/#!forum/cdap-user)
+
+License
+-------
+
+Copyright © 2014 Cask Data, Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may
+not use this file except in compliance with the License. You may obtain
+a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
