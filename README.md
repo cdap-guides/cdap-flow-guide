@@ -249,7 +249,7 @@ public class Parser extends AbstractFlowlet {
   public void process(StreamEvent diskMetrics) {
     String event = Charsets.UTF_8.decode(diskMetrics.getBody()).toString();
     // events are expected to have the following format:
-    // diskId operationTime(in microsec)
+    // diskId operationTime (in microseconds)
     String[] fields = event.split(" ", 2);
     String diskId = fields[0];
     long readTime = Long.parseLong(fields[1]);
