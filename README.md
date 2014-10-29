@@ -23,7 +23,7 @@ Let’s Build It!
 ---------------
 The following sections will guide you through implementing a real-time data processing application from scratch.
 If you want to deploy and run the application right away, you can clone the sources from this GitHub repository.
-In that case, feel free to skip the following two sections and jump directly to the [Build and Run Application](#Build and Run Application) section.
+In that case, feel free to skip the following two sections and jump directly to the *Build and Run Application* section.
 
 ### Application Design
 
