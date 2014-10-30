@@ -9,7 +9,7 @@ import com.google.common.base.Charsets;
 /**
  * Receives disk metrics as stream events, and outputs the disk ID if the disk operation was slow.
  */
-public class Parser extends AbstractFlowlet {
+public class DetectorFlowlet extends AbstractFlowlet {
   private static final long SLOW_THRESHOLD = 1000;
 
   private OutputEmitter<String> out;

@@ -11,13 +11,16 @@ import com.google.common.collect.Maps;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 
 /**
  * Handler with a single endpoint that returns disks that should be replaced soon.
  */
-public class DiskPerformanceService extends AbstractHttpServiceHandler {
+public class DiskPerformanceHTTPHandler extends AbstractHttpServiceHandler {
+  private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
 
   @UseDataSet("slowDisks")
   private KeyValueTable slowDisksTable;
@@ -26,12 +29,13 @@ public class DiskPerformanceService extends AbstractHttpServiceHandler {
   @GET
   public void getSlowDisks(HttpServiceRequest request, HttpServiceResponder responder) {
     Iterator<KeyValue<byte[], byte[]>> slowDisksScan = slowDisksTable.scan(null, null);
-    Map<String, Long> slowDisks = Maps.newHashMap();
+    Map<String, String> slowDisks = Maps.newHashMap();
     while (slowDisksScan.hasNext()) {
       KeyValue<byte[], byte[]> slowDisk = slowDisksScan.next();
       String diskId = Bytes.toString(slowDisk.getKey());
       long troubleTime = Bytes.toLong(slowDisk.getValue());
-      slowDisks.put(diskId, troubleTime);
+      String troubleTimeStr = DATE_FORMAT.format(new Date(troubleTime));
+      slowDisks.put(diskId, troubleTimeStr);
     }
     responder.sendJson(200, slowDisks);
   }

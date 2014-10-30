@@ -33,7 +33,7 @@ public class DiskPerformanceApp extends AbstractApplication {
     createDataset("slowDiskReads", KeyValueTable.class);
     createDataset("slowDisks", KeyValueTable.class);
     addFlow(new DiskPerformanceFlow());
-    addService("DiskPerformanceService", new DiskPerformanceService());
+    addService("DiskPerformanceService", new DiskPerformanceHTTPHandler());
   }
 }
 

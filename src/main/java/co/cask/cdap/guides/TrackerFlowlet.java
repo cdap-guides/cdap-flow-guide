@@ -13,7 +13,7 @@ import co.cask.cdap.api.flow.flowlet.AbstractFlowlet;
  * storing the disk ID in a separate dataset if it has been slow very often, indicating that it may be time to replace
  * the disk.
  */
-public class Tracker extends AbstractFlowlet {
+public class TrackerFlowlet extends AbstractFlowlet {
   // intentionally set very low for illustrative purposes
   private static final long FLAG_THRESHOLD = 3;
 
@@ -24,7 +24,7 @@ public class Tracker extends AbstractFlowlet {
   private KeyValueTable slowDisksTable;
 
   @ProcessInput
-  @Batch(10)
+  @Batch(100)
   @HashPartition("diskId")
   public void process(String diskId) {
     byte[] countAsBytes = slowDiskReadsTable.read(diskId);

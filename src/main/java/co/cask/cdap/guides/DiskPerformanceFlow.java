@@ -4,7 +4,7 @@ import co.cask.cdap.api.flow.Flow;
 import co.cask.cdap.api.flow.FlowSpecification;
 
 /**
- * Flow that reads disk metrics from a stream, and tracks which disks are slow.
+ * Flow that reads disk IO operations from a stream, and tracks which disks are slow.
  */
 public class DiskPerformanceFlow implements Flow {
 
@@ -12,14 +12,14 @@ public class DiskPerformanceFlow implements Flow {
   public FlowSpecification configure() {
     return FlowSpecification.Builder.with()
       .setName("DiskPerformanceFlow")
-      .setDescription("A flow that tracks how often each disk is slow")
+      .setDescription("Tracks slow disks using I/O ops stats")
       .withFlowlets()
-        .add("parser", new Parser())
+        .add("slowReadDetector", new DetectorFlowlet())
         // start with 2 instances of the tracker
-        .add("tracker", new Tracker(), 2)
+        .add("slowDiskTracker", new TrackerFlowlet(), 2)
       .connect()
-        .fromStream("diskReads").to("parser")
-        .from("parser").to("tracker")
+        .fromStream("diskReads").to("slowReadDetector")
+        .from("slowReadDetector").to("slowDiskTracker")
       .build();
   }
 }
