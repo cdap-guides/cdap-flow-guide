@@ -208,8 +208,8 @@ When using batching, you need to be careful about two things:
 
 -   running out of memory; and
 -   the increased chance for conflicts.
--   When you process data in batches, you keep the entire batch and any intermediate data in memory, which grows as you increase the batch size.
 
+When you process data in batches, you keep the entire batch and any intermediate data in memory, which grows as you increase the batch size.
 When you consume data with multiple flowlet instances which update the same values in datasets, there is a chance for a conflict.
 The framework resolves them automatically, but in the end, you pay a price for the overhead caused by a retry.
 As batch size grows, the chance for a conflict increases, as more rows are modified by overlapping transactions.
