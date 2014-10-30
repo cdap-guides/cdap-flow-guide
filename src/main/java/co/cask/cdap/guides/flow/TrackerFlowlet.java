@@ -1,4 +1,4 @@
-package co.cask.cdap.guides;
+package co.cask.cdap.guides.flow;
 
 import co.cask.cdap.api.annotation.Batch;
 import co.cask.cdap.api.annotation.HashPartition;
@@ -16,6 +16,7 @@ import co.cask.cdap.api.flow.flowlet.AbstractFlowlet;
 public class TrackerFlowlet extends AbstractFlowlet {
   // intentionally set very low for illustrative purposes
   private static final long FLAG_THRESHOLD = 3;
+  static final String NAME = "slowDiskTracker";
 
   @UseDataSet("slowDiskReads")
   private KeyValueTable slowDiskReadsTable;

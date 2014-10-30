@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package co.cask.cdap.guides;
+package co.cask.cdap.guides.flow;
 
 import co.cask.cdap.api.app.AbstractApplication;
 import co.cask.cdap.api.data.stream.Stream;
@@ -25,15 +25,17 @@ import co.cask.cdap.api.dataset.lib.KeyValueTable;
  * HTTP endpoint to highlight disks that may need to be replaced soon.
  */
 public class DiskPerformanceApp extends AbstractApplication {
+  static final String APP_NAME = "DiskPerformanceApp";
+  static final String STREAM_NAME = "diskReads";
 
   @Override
   public void configure() {
-    setName("DiskPerformanceApp");
-    addStream(new Stream("diskReads"));
+    setName(APP_NAME);
+    addStream(new Stream(STREAM_NAME));
     createDataset("slowDiskReads", KeyValueTable.class);
     createDataset("slowDisks", KeyValueTable.class);
     addFlow(new DiskPerformanceFlow());
-    addService("DiskPerformanceService", new DiskPerformanceHTTPHandler());
+    addService(DiskPerformanceHTTPHandler.NAME, new DiskPerformanceHTTPHandler());
   }
 }
 

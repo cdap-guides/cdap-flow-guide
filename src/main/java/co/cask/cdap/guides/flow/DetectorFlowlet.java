@@ -1,4 +1,4 @@
-package co.cask.cdap.guides;
+package co.cask.cdap.guides.flow;
 
 import co.cask.cdap.api.annotation.ProcessInput;
 import co.cask.cdap.api.flow.flowlet.AbstractFlowlet;
@@ -11,6 +11,7 @@ import com.google.common.base.Charsets;
  */
 public class DetectorFlowlet extends AbstractFlowlet {
   private static final long SLOW_THRESHOLD = 1000;
+  static final String NAME = "slowReadDetector";
 
   private OutputEmitter<String> out;
 

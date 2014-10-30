@@ -26,7 +26,7 @@
   <name>CDAP Flow Guide</name>
 
   <properties>
-    <app.main.class>co.cask.cdap.guides.DiskPerformanceApp</app.main.class>
+    <app.main.class>co.cask.cdap.guides.flow.DiskPerformanceApp</app.main.class>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <cdap.version>2.5.1</cdap.version>
     <slf4j.version>1.7.5</slf4j.version>
@@ -51,6 +51,14 @@
       <artifactId>cdap-api</artifactId>
       <version>${cdap.version}</version>
       <scope>provided</scope>
+    </dependency>
+
+    <!-- Test dependencies -->
+    <dependency>
+      <groupId>co.cask.cdap</groupId>
+      <artifactId>cdap-unit-test</artifactId>
+      <version>${cdap.version}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 

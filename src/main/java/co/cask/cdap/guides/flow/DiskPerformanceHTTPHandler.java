@@ -1,4 +1,4 @@
-package co.cask.cdap.guides;
+package co.cask.cdap.guides.flow;
 
 import co.cask.cdap.api.annotation.UseDataSet;
 import co.cask.cdap.api.common.Bytes;
@@ -21,6 +21,7 @@ import java.util.Map;
  */
 public class DiskPerformanceHTTPHandler extends AbstractHttpServiceHandler {
   private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
+  static final String NAME = "DiskPerformanceService";
 
   @UseDataSet("slowDisks")
   private KeyValueTable slowDisksTable;
