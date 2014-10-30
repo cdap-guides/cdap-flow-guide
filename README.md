@@ -49,15 +49,17 @@ First create the application, which contains a stream, flow, and datasets.
 
 ```java
 public class DiskPerformanceApp extends AbstractApplication {
+  static final String APP_NAME = "DiskPerformanceApp";
+  static final String STREAM_NAME = "diskReads";
 
   @Override
   public void configure() {
-    setName("DiskPerformanceApp");
-    addStream(new Stream("diskReads"));
+    setName(APP_NAME);
+    addStream(new Stream(STREAM_NAME));
     createDataset("slowDiskReads", KeyValueTable.class);
     createDataset("slowDisks", KeyValueTable.class);
     addFlow(new DiskPerformanceFlow());
-    addService("DiskPerformanceService", new DiskPerformanceHTTPHandler());
+    addService(DiskPerformanceHTTPHandler.NAME, new DiskPerformanceHTTPHandler());
   }
 }
 ```
@@ -76,19 +78,20 @@ You want to do this if a single `Detector` can output more quickly than a single
 
 ```java
 public class DiskPerformanceFlow implements Flow {
+  static final String NAME = "DiskPerformanceFlow";
 
   @Override
   public FlowSpecification configure() {
     return FlowSpecification.Builder.with()
-      .setName("DiskPerformanceFlow")
+      .setName(NAME)
       .setDescription("Tracks slow disks using I/O ops stats")
       .withFlowlets()
-        .add("slowReadDetector", new DetectorFlowlet())
+        .add(DetectorFlowlet.NAME, new DetectorFlowlet())
         // start with 2 instances of the tracker
-        .add("slowDiskTracker", new TrackerFlowlet(), 2)
+        .add(TrackerFlowlet.NAME, new TrackerFlowlet(), 2)
       .connect()
-        .fromStream("diskReads").to("slowReadDetector")
-        .from("slowReadDetector").to("slowDiskTracker")
+        .fromStream(DiskPerformanceApp.STREAM_NAME).to(DetectorFlowlet.NAME)
+        .from(DetectorFlowlet.NAME).to(TrackerFlowlet.NAME)
       .build();
   }
 }
@@ -99,6 +102,7 @@ Next we create the `Detector` Flowlet, which reads from the Stream and outputs t
 ```java
 public class DetectorFlowlet extends AbstractFlowlet {
   private static final long SLOW_THRESHOLD = 1000;
+  static final String NAME = "slowReadDetector";
 
   private OutputEmitter<String> out;
 
@@ -124,6 +128,7 @@ If a disk records too many slow reads, the `Tracker` places it in a separate dat
 public class TrackerFlowlet extends AbstractFlowlet {
   // intentionally set very low for illustrative purposes
   private static final long FLAG_THRESHOLD = 3;
+  static final String NAME = "slowDiskTracker";
 
   @UseDataSet("slowDiskReads")
   private KeyValueTable slowDiskReadsTable;
@@ -149,6 +154,7 @@ Finally, we implement a Service that exposes a RESTful API used to display the s
 ```java
 public class DiskPerformanceHTTPHandler extends AbstractHttpServiceHandler {
   private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
+  static final String NAME = "DiskPerformanceService";
 
   @UseDataSet("slowDisks")
   private KeyValueTable slowDisksTable;
@@ -272,6 +278,7 @@ With batching and hash partitioning, our Detector and Tracker classes have chang
 ```java
 public class DetectorFlowlet extends AbstractFlowlet {
   private static final long SLOW_THRESHOLD = 1000;
+  static final String NAME = "slowReadDetector";
 
   private OutputEmitter<String> out;
 
@@ -292,6 +299,7 @@ public class DetectorFlowlet extends AbstractFlowlet {
 public class TrackerFlowlet extends AbstractFlowlet {
   // intentionally set very low for illustrative purposes
   private static final long FLAG_THRESHOLD = 3;
+  static final String NAME = "slowDiskTracker";
 
   @UseDataSet("slowDiskReads")
   private KeyValueTable slowDiskReadsTable;
