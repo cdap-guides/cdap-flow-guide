@@ -28,10 +28,12 @@ In that case, feel free to skip the following two sections and jump directly to 
 
 ### Application Design
 
-In CDAP, you process data in realtime by implementing a Flow.  In this example the Flow consists of two Flowlets.
+In CDAP, you process data in realtime by implementing a Flow. In this example the Flow consists of two Flowlets.
 The `Detector` Flowlet consumes data from a `diskReads` Stream, parses the event, and outputs the disk ID if the event was a slow disk read.
 The `Tracker` Flowlet reads the disk ID emitted by the `Detector`, and updates a count of how often that disk has recorded a slow read.
 If a disk has recorded too many slow reads, the disk ID is written to a separate dataset that tracks all disks that should soon be replaced.
+
+![](docs/images/app-design.png)
 
 ### Implementation
 
