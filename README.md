@@ -33,7 +33,7 @@ The `Detector` Flowlet consumes data from a `diskReads` Stream, parses the event
 The `Tracker` Flowlet reads the disk ID emitted by the `Detector`, and updates a count of how often that disk has recorded a slow read.
 If a disk has recorded too many slow reads, the disk ID is written to a separate dataset that tracks all disks that should soon be replaced.
 
-![](docs/images/app-design.png)
+![](docs/img/app-design.png)
 
 ### Implementation
 
