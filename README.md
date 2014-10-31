@@ -213,7 +213,7 @@ Most of the time, using mini-batches is a trade-off between processing latency a
 You pay less overhead for transactions with mini-batches in order to reach a higher throughput.
 At the same time, your event is processed only when the whole batch is processed, which usually means a higher latency.
 
-### Optimizing for Scaling Realtime Processing
+### Optimizing for Scale
 
 When using micro-batching, you need to be also careful about two things:
 
