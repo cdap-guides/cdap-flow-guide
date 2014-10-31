@@ -71,7 +71,9 @@ The Detector Flowlet parses disk I/O events from the Stream and emits the disk I
 operation is slower than a threshold. The Tracker consumes the output of the Detector Flowlet
 and performs an analysis to detect a slow disk. Since a Tracker Flowlet performs dataset operations,
 it may be slower than a Detector Flowlet that performs all processing in memory. Thus, it's a good idea
-to have multiple Tracker Flowlet instances. In the Flow specification below, we'll start with a single
+to have multiple Tracker Flowlet instances. 
+
+In the Flow specification below, we'll start with a single
 Detector and two Tracker Flowlets.
 The parser reads from the stream, and the tracker then reads from the parser.
 We will set the number of `Tracker` instances to two.
@@ -182,11 +184,14 @@ With this, we have a working application!
 We can build it, send data to the stream, and send an HTTP request to get slow disks that should be replaced soon.
 Before we do that, let’s add a couple enhancements.
 
+### Realtime Processing with Micro-batches
+
 Everything that happens in the process method of a flowlet is guaranteed to happen exactly once.
 This is made possible by the execution of each process method inside a separate transaction, which is done by the CDAP framework.
 The overhead of the transaction is very small, but it is a good idea to minimize it even further by instructing the framework to
 process multiple inputs within the same transaction. That is, consume up to a small number of inputs, if those are available.
-This technique is called "processing with mini-batches."
+This technique is called "processing with micro-batches."
+
 With a batch size of 100, we will pay the cost of the overhead just once for every 100 events instead of 100 times for 100 events.
 Telling a flowlet to process its input in batches of 100 is as simple as adding the Batch annotation to the process method.  
 
@@ -202,11 +207,15 @@ public class TrackerFlowlet extends AbstractFlowlet {
 }
 ```
 
+
+
 Most of the time, using mini-batches is a trade-off between processing latency and throughput.
 You pay less overhead for transactions with mini-batches in order to reach a higher throughput.
 At the same time, your event is processed only when the whole batch is processed, which usually means a higher latency.
 
-When using batching, you need to be careful about two things:
+### Optimizing for Scaling Realtime Processing
+
+When using micro-batching, you need to be also careful about two things:
 
 -   running out of memory; and
 -   the increased chance for conflicts.
@@ -375,10 +384,13 @@ Next we start the service:
 
     cdap-cli.sh start service DiskPerformanceApp.DiskPerformanceService
 
-The Service exposes a RESTful API that allows us to display all slow disks and the timestamp at which they were flagged as a slow disk.
-Make the request and note the output:
+The Service exposes a RESTful API that allows us to display all slow disks and the timestamp at which they were flagged as a slow disk. 
+Make the request to query slow disks:
 
-    curl http://localhost:10000/v2/apps/DiskPerformanceApp/services/DiskPerformanceService/methods/slowdisks && echo
+    curl http://localhost:10000/v2/apps/DiskPerformanceApp/services/DiskPerformanceService/methods/slowdisks
+    
+Example output:
+    
     {"disk1":"2014-10-30 13:46:33 PDT"}
 
 Extend This Example
