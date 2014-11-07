@@ -13,7 +13,7 @@ to identify disks that may need to be replaced soon. You will:
 -   Build a [Service](http://docs.cdap.io/cdap/current/en/developer-guide/building-blocks/services.html) to query via HTTP which slow disks should be replaced.
 
 
-What you will need
+What You Will Need
 ------------------
 -   [JDK 6 or JDK 7](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
 -   [Apache Maven 3.0+](http://maven.apache.org/download.cgi)
