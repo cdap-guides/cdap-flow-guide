@@ -8,16 +8,16 @@ What You Will Build
 You will build a CDAP application that processes disk usage information across machines in a large company in order
 to identify disks that may need to be replaced soon. You will:
 
--   Build a [Flow](http://docs.cdap.io/cdap/current/en/developer-guide/building-blocks/flows-flowlets/flows.html) to process disk usage data in realtime;
--   Use [Datasets](http://docs.cdap.io/cdap/current/en/developer-guide/building-blocks/datasets/index.html) to store the number of slow reads per disk and track slow disks that may need to be replaced soon; and
--   Build a [Service](http://docs.cdap.io/cdap/current/en/developer-guide/building-blocks/services.html) to query via HTTP which slow disks should be replaced.
+-   Build a [Flow](http://docs.cdap.io/cdap/current/en/developers-manual/building-blocks/flows-flowlets/flows.html) to process disk usage data in realtime;
+-   Use [Datasets](http://docs.cdap.io/cdap/current/en/developers-manual/building-blocks/datasets/index.html) to store the number of slow reads per disk and track slow disks that may need to be replaced soon; and
+-   Build a [Service](http://docs.cdap.io/cdap/current/en/developers-manual/building-blocks/services.html) to query via HTTP which slow disks should be replaced.
 
 
 What You Will Need
 ------------------
 -   [JDK 6 or JDK 7](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
 -   [Apache Maven 3.0+](http://maven.apache.org/download.cgi)
--   [CDAP SDK](http://docs.cdap.io/cdap/current/en/developer-guide/getting-started/standalone/index.html)
+-   [CDAP SDK](http://docs.cdap.io/cdap/current/en/developers-manual/getting-started/standalone/index.html)
 
 Let’s Build It!
 ---------------
