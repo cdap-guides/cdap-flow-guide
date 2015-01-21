@@ -81,6 +81,7 @@ public class DiskPerformanceAppTest extends TestBase {
 
       // Start service and verify
       ServiceManager serviceManager = appManager.startService(DiskPerformanceHTTPHandler.NAME);
+      serviceManager.waitForStatus(true);
       try {
         URL serviceUrl = serviceManager.getServiceURL();
 
@@ -95,6 +96,7 @@ public class DiskPerformanceAppTest extends TestBase {
         Assert.assertTrue(slowDisks.containsKey("disk1"));
       } finally {
         serviceManager.stop();
+        serviceManager.waitForStatus(false);
       }
     } finally {
       flowManager.stop();
