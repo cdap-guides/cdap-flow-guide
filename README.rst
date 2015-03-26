@@ -234,9 +234,9 @@ The framework resolves them automatically, but in the end, you pay a price for t
 As batch size grows, the chance for a conflict increases, as more rows are modified by overlapping transactions.
 It is important to correctly partition data between flowlet instances to reduce the chance of conflict or to avoid it altogether.
 
-The default partitioning strategy is round-robin, which basically means that data is partitioned randomly and different
+One possible strategy is round-robin, which basically means that data is partitioned randomly and different
 batches processed in parallel may have the same values and may result in updating the same cells in a dataset.
-Using hash-partitioning will help to resolve this.
+Using hash-partitioning instead of round-robin will help to resolve this.
 Let's take a look at the data flow of our application to see how we can employ a hash-partitioning strategy to avoid conflicts.
 
 Suppose the Detector reads two slow disk reads for disk1.  It outputs “disk1” and again outputs “disk1”.
