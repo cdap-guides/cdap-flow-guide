@@ -346,72 +346,74 @@ Build and Run Application
 
 The DiskPerformanceApp can be built and packaged using the Apache Maven command::
 
-    mvn clean package
+  $ mvn clean package
 
 Note that the remaining commands assume that the ``cdap-cli.sh`` script is available on your PATH.
 If this is not the case, please add it::
 
-    export PATH=$PATH:<CDAP home>/bin
+  $ export PATH=$PATH:<CDAP home>/bin
 
 If you haven't already started a standalone CDAP installation, start it with the command::
 
-    cdap.sh start
+  $ cdap.sh start
 
 We can then deploy the application::
 
-    cdap-cli.sh deploy app target/cdap-flow-guide-1.0.0.jar
+  $ cdap-cli.sh deploy app target/cdap-flow-guide-<version>.jar
 
 Next we start the flow::
 
-    cdap-cli.sh start flow DiskPerformanceApp.DiskPerformanceFlow
+  $ cdap-cli.sh start flow DiskPerformanceApp.DiskPerformanceFlow
 
 Note that there is one instance of the ``Detector`` Flowlet running and two instances of the ``Tracker`` Flowlet running::
 
-    cdap-cli.sh get instances flowlet DiskPerformanceApp.DiskPerformanceFlow.slowReadDetector
-    1
+  $ cdap-cli.sh get flowlet instances DiskPerformanceApp.DiskPerformanceFlow.slowReadDetector
+  1
 
-    cdap-cli.sh get instances flowlet DiskPerformanceApp.DiskPerformanceFlow.slowDiskTracker
-    2
+  $ cdap-cli.sh get flowlet instances DiskPerformanceApp.DiskPerformanceFlow.slowDiskTracker
+  2
 
 We can scale out our application and increase the number of ``Tracker`` Flowlets to four::
 
-    cdap-cli.sh set instances flowlet DiskPerformanceApp.DiskPerformanceFlow.slowDiskTracker 4
-
-    cdap-cli.sh get instances flowlet DiskPerformanceApp.DiskPerformanceFlow.slowDiskTracker
-    4
+  $ cdap-cli.sh set flowlet instances DiskPerformanceApp.DiskPerformanceFlow.slowDiskTracker 4
+  Successfully set flowlet 'DiskPerformanceFlow' of flow 'slowDiskTracker' of app 'DiskPerformanceApp' to 4 instances
+  
+  $ cdap-cli.sh get flowlet instances DiskPerformanceApp.DiskPerformanceFlow.slowDiskTracker
+  4
 
 Scaling your application is easy in CDAP!
 Now we can manually send enough slow disk events to the diskReads stream to get a disk classified as a slow disk::
 
-    cdap-cli.sh send stream diskReads "disk1 1001"
-    cdap-cli.sh send stream diskReads "disk1 1001"
-    cdap-cli.sh send stream diskReads "disk1 1001"
-    cdap-cli.sh send stream diskReads "disk1 1001"
+  $ cdap-cli.sh send stream diskReads \''disk1 1001'\'
+  $ cdap-cli.sh send stream diskReads \''disk1 1001'\'
+  $ cdap-cli.sh send stream diskReads \''disk1 1001'\'
+  $ cdap-cli.sh send stream diskReads \''disk1 1001'\'
+  $ cdap-cli.sh send stream diskReads \''disk1 1001'\'
 
 Next we start the service::
 
-    cdap-cli.sh start service DiskPerformanceApp.DiskPerformanceService
+  $ cdap-cli.sh start service DiskPerformanceApp.DiskPerformanceService
 
 The Service exposes a RESTful API that allows us to display all slow disks and the timestamp at which they were flagged as a slow disk. 
 Make the request to query slow disks::
 
-    curl http://localhost:10000/v2/apps/DiskPerformanceApp/services/DiskPerformanceService/methods/slowdisks
+  $ curl -w'\n' http://localhost:10000/v3/namespaces/default/apps/DiskPerformanceApp/services/DiskPerformanceService/methods/slowdisks
     
 Example output::
     
-    {"disk1":"2014-10-30 13:46:33 PDT"}
+  {"disk1":"2015-04-04 13:46:33 PDT"}
 
 
 Extend This Example
 ===================
 To make this application more useful, you can extend it by:
 
--   Including the disk type in the Stream event and categorize a slow read based on the type of disk.
--   Passing your own custom Java object through the Flowlets instead of a String.
--   Adding an endpoint to the Service that can remove a disk from the ``slowDisks`` Dataset.
--   Changing the logic so that 1000 normal disk read times counteract a slow disk read.
--   Tracking additional disk metrics, such as write times, and use a combination of factors
-    to determine whether or not a disk belongs in the ``slowDisks`` table.
+- Including the disk type in the Stream event and categorize a slow read based on the type of disk.
+- Passing your own custom Java object through the Flowlets instead of a String.
+- Adding an endpoint to the Service that can remove a disk from the ``slowDisks`` Dataset.
+- Changing the logic so that 1000 normal disk read times counteract a slow disk read.
+- Tracking additional disk metrics, such as write times, and use a combination of factors
+  to determine whether or not a disk belongs in the ``slowDisks`` table.
 
 
 Share and Discuss!
