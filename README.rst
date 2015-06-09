@@ -1,9 +1,9 @@
 =====================================
-Real Time Data Processing with a Flow
+Real-time Data Processing with a Flow
 =====================================
 
-In this guide you will learn how to process data in real time with the Cask Data Application Platform (CDAP).
-You will also learn how easy it is to scale out real time data processing applications on CDAP.
+In this guide you will learn how to process data in real-time with the Cask Data Application Platform (CDAP).
+You will also learn how easy it is to scale out real-time data processing applications on CDAP.
 
 What You Will Build
 ===================
@@ -11,7 +11,7 @@ You will build a CDAP application that processes disk usage information across m
 to identify disks that may need to be replaced soon. You will:
 
 -   Build a `Flow <http://docs.cdap.io/cdap/current/en/developers-manual/building-blocks/flows-flowlets/flows.html>`__ 
-    to process disk usage data in real time;
+    to process disk usage data in real-time;
 -   Use `Datasets <http://docs.cdap.io/cdap/current/en/developers-manual/building-blocks/datasets/index.html>`__
     to store the number of slow reads per disk and track slow disks that may need to be replaced soon; and
 -   Build a `Service <http://docs.cdap.io/cdap/current/en/developers-manual/building-blocks/services.html>`__
@@ -28,14 +28,14 @@ What You Will Need
 
 Let’s Build It!
 ===============
-The following sections will guide you through implementing a real time data processing application from scratch.
+The following sections will guide you through implementing a real-time data processing application from scratch.
 If you want to deploy and run the application right away, you can clone the sources from this GitHub repository.
 In that case, feel free to skip the following two sections and jump directly to the
 `Build and Run Application <#build-and-run-application>`__ section.
 
 Application Design
 ------------------
-In CDAP, you process data in real time by implementing a Flow. In this example the Flow consists of two Flowlets.
+In CDAP, you process data in real-time by implementing a Flow. In this example the Flow consists of two Flowlets.
 The ``Detector`` Flowlet consumes data from a ``diskReads`` Stream, parses the event, and outputs the disk ID if the event was a slow disk read.
 The ``Tracker`` Flowlet reads the disk ID emitted by the ``Detector``, and updates a count of how often that disk has recorded a slow read.
 If a disk has recorded too many slow reads, the disk ID is written to a separate dataset that tracks all disks that should soon be replaced.
@@ -195,7 +195,7 @@ With this, we have a working application!
 We can build it, send data to the stream, and send an HTTP request to get slow disks that should be replaced soon.
 Before we do that, let’s add a couple enhancements.
 
-Real Time Processing with Micro-batches
+Real-time Processing with Micro-batches
 ---------------------------------------
 Everything that happens in the process method of a flowlet is guaranteed to happen exactly once.
 This is made possible by the execution of each process method inside a separate transaction, which is done by the CDAP framework.
