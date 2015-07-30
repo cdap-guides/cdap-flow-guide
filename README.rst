@@ -21,7 +21,7 @@ to identify disks that may need to be replaced soon. You will:
 What You Will Need
 ==================
 
--   `JDK 7 <http://www.oracle.com/technetwork/java/javase/downloads/index.html>`__
+-   `JDK 7 or 8 <http://www.oracle.com/technetwork/java/javase/downloads/index.html>`__
 -   `Apache Maven 3.1+ <http://maven.apache.org/download.cgi>`__
 -   `CDAP SDK <http://docs.cdap.io/cdap/current/en/developers-manual/getting-started/standalone/index.html>`__
 
