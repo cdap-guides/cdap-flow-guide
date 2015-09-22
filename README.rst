@@ -360,7 +360,8 @@ If you haven't already started a standalone CDAP installation, start it with the
 
 We can then deploy the application::
 
-  $ cdap-cli.sh deploy app target/cdap-flow-guide-<version>.jar
+  $ cdap-cli.sh load artifact target/cdap-flow-guide-<version>.jar
+  $ cdap-cli.sh create app DiskPerformanceApp cdap-flow-guide <version> user
 
 Next we start the flow::
 
