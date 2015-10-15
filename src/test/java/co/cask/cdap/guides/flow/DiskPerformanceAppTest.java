@@ -19,9 +19,8 @@ package co.cask.cdap.guides.flow;
 import co.cask.cdap.api.metrics.RuntimeMetrics;
 import co.cask.cdap.test.ApplicationManager;
 import co.cask.cdap.test.FlowManager;
-import co.cask.cdap.test.RuntimeStats;
 import co.cask.cdap.test.ServiceManager;
-import co.cask.cdap.test.StreamWriter;
+import co.cask.cdap.test.StreamManager;
 import co.cask.cdap.test.TestBase;
 import co.cask.common.http.HttpRequest;
 import co.cask.common.http.HttpRequests;
@@ -48,39 +47,37 @@ public class DiskPerformanceAppTest extends TestBase {
     ApplicationManager appManager = deployApplication(DiskPerformanceApp.class);
 
     // Start the flow
-    FlowManager flowManager = appManager.startFlow(DiskPerformanceFlow.NAME);
+    FlowManager flowManager = appManager.getFlowManager(DiskPerformanceFlow.NAME);
+    flowManager.start();
 
     try {
-      StreamWriter streamWriter = appManager.getStreamWriter(DiskPerformanceApp.STREAM_NAME);
+      StreamManager streamManager = getStreamManager(DiskPerformanceApp.STREAM_NAME);
       // disk1 has 3 slow reads, which will classify it as a slow disk
-      streamWriter.send("disk1 100");
-      streamWriter.send("disk1 999");
-      streamWriter.send("disk1 1000");
+      streamManager.send("disk1 100");
+      streamManager.send("disk1 999");
+      streamManager.send("disk1 1000");
       // slow reads
-      streamWriter.send("disk1 1001");
-      streamWriter.send("disk1 5000");
-      streamWriter.send("disk1 10000");
+      streamManager.send("disk1 1001");
+      streamManager.send("disk1 5000");
+      streamManager.send("disk1 10000");
       // disk2 has 2 slow reads, which will not classify it as a slow disk
-      streamWriter.send("disk2 100");
-      streamWriter.send("disk2 1000");
+      streamManager.send("disk2 100");
+      streamManager.send("disk2 1000");
       // slow reads
-      streamWriter.send("disk2 5000");
-      streamWriter.send("disk2 10000");
+      streamManager.send("disk2 5000");
+      streamManager.send("disk2 10000");
 
-      RuntimeMetrics countMetrics = RuntimeStats.getFlowletMetrics(DiskPerformanceApp.APP_NAME,
-                                                                   DiskPerformanceFlow.NAME,
-                                                                   DetectorFlowlet.NAME);
+      RuntimeMetrics countMetrics = flowManager.getFlowletMetrics(DetectorFlowlet.NAME);
       // 10 events should be processed by the detector flowlet
       countMetrics.waitForProcessed(10, 3, TimeUnit.SECONDS);
       // 7 events should be processed by the tracker flowlet, since 5 out of 10 events were slow disk reads
-      countMetrics = RuntimeStats.getFlowletMetrics(DiskPerformanceApp.APP_NAME,
-                                                    DiskPerformanceFlow.NAME,
-                                                    TrackerFlowlet.NAME);
+      countMetrics = flowManager.getFlowletMetrics(TrackerFlowlet.NAME);
       countMetrics.waitForProcessed(5, 3, TimeUnit.SECONDS);
 
 
       // Start service and verify
-      ServiceManager serviceManager = appManager.startService(DiskPerformanceHTTPHandler.NAME);
+      ServiceManager serviceManager = appManager.getServiceManager(DiskPerformanceHTTPHandler.NAME);
+      serviceManager.start();
       serviceManager.waitForStatus(true);
       try {
         URL serviceUrl = serviceManager.getServiceURL();
