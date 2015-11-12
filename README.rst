@@ -91,22 +91,18 @@ You want to do this if a single ``Detector`` can output more quickly than a sing
 
 .. code:: java
 
-  public class DiskPerformanceFlow implements Flow {
+  public class DiskPerformanceFlow extends AbstractFlow {
     static final String NAME = "DiskPerformanceFlow";
 
     @Override
-    public FlowSpecification configure() {
-      return FlowSpecification.Builder.with()
-        .setName(NAME)
-        .setDescription("Tracks slow disks using I/O ops stats")
-        .withFlowlets()
-          .add(DetectorFlowlet.NAME, new DetectorFlowlet())
-          // start with 2 instances of the tracker
-          .add(TrackerFlowlet.NAME, new TrackerFlowlet(), 2)
-        .connect()
-          .fromStream(DiskPerformanceApp.STREAM_NAME).to(DetectorFlowlet.NAME)
-          .from(DetectorFlowlet.NAME).to(TrackerFlowlet.NAME)
-        .build();
+    public void configure() {
+      setName(NAME);
+      setDescription("Tracks slow disks using I/O ops stats");
+      addFlowlet(DetectorFlowlet.NAME, new DetectorFlowlet());
+      // start with 2 instances of the tracker
+      addFlowlet(TrackerFlowlet.NAME, new TrackerFlowlet(), 2);
+      connectStream(DiskPerformanceApp.STREAM_NAME, DetectorFlowlet.NAME);
+      connect(DetectorFlowlet.NAME, TrackerFlowlet.NAME);
     }
   }
 
