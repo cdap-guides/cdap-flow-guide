@@ -30,8 +30,8 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <cdap.version>3.5.0-SNAPSHOT</cdap.version>
     <slf4j.version>1.7.5</slf4j.version>
-    <guava.version>13.0.1</guava.version>
     <junit.version>4.11</junit.version>
+    <guava.version>13.0.1</guava.version>
   </properties>
 
   <repositories>
@@ -55,6 +55,11 @@
       <artifactId>cdap-api</artifactId>
       <version>${cdap.version}</version>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>${guava.version}</version>
     </dependency>
 
     <!-- Test dependencies -->
