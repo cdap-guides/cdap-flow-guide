@@ -345,52 +345,52 @@ The DiskPerformanceApp can be built and packaged using the Apache Maven command:
 
   $ mvn clean package
 
-Note that the remaining commands assume that the ``cdap-cli.sh`` script is available on your PATH.
+Note that the remaining commands assume that the ``cdap`` script is available on your PATH.
 If this is not the case, please add it::
 
   $ export PATH=$PATH:<CDAP home>/bin
 
 If you haven't already started a standalone CDAP installation, start it with the command::
 
-  $ cdap.sh start
+  $ cdap sdk start
 
 We can then deploy the application::
 
-  $ cdap-cli.sh load artifact target/cdap-flow-guide-<version>.jar
-  $ cdap-cli.sh create app DiskPerformanceApp cdap-flow-guide <version> user
+  $ cdap cli load artifact target/cdap-flow-guide-<version>.jar
+  $ cdap cli create app DiskPerformanceApp cdap-flow-guide <version> user
 
 Next we start the flow::
 
-  $ cdap-cli.sh start flow DiskPerformanceApp.DiskPerformanceFlow
+  $ cdap cli start flow DiskPerformanceApp.DiskPerformanceFlow
 
 Note that there is one instance of the ``Detector`` Flowlet running and two instances of the ``Tracker`` Flowlet running::
 
-  $ cdap-cli.sh get flowlet instances DiskPerformanceApp.DiskPerformanceFlow.slowReadDetector
+  $ cdap cli get flowlet instances DiskPerformanceApp.DiskPerformanceFlow.slowReadDetector
   1
 
-  $ cdap-cli.sh get flowlet instances DiskPerformanceApp.DiskPerformanceFlow.slowDiskTracker
+  $ cdap cli get flowlet instances DiskPerformanceApp.DiskPerformanceFlow.slowDiskTracker
   2
 
 We can scale out our application and increase the number of ``Tracker`` Flowlets to four::
 
-  $ cdap-cli.sh set flowlet instances DiskPerformanceApp.DiskPerformanceFlow.slowDiskTracker 4
+  $ cdap cli set flowlet instances DiskPerformanceApp.DiskPerformanceFlow.slowDiskTracker 4
   Successfully set flowlet 'DiskPerformanceFlow' of flow 'slowDiskTracker' of app 'DiskPerformanceApp' to 4 instances
   
-  $ cdap-cli.sh get flowlet instances DiskPerformanceApp.DiskPerformanceFlow.slowDiskTracker
+  $ cdap cli get flowlet instances DiskPerformanceApp.DiskPerformanceFlow.slowDiskTracker
   4
 
 Scaling your application is easy in CDAP!
 Now we can manually send enough slow disk events to the diskReads stream to get a disk classified as a slow disk::
 
-  $ cdap-cli.sh send stream diskReads \''disk1 1001'\'
-  $ cdap-cli.sh send stream diskReads \''disk1 1001'\'
-  $ cdap-cli.sh send stream diskReads \''disk1 1001'\'
-  $ cdap-cli.sh send stream diskReads \''disk1 1001'\'
-  $ cdap-cli.sh send stream diskReads \''disk1 1001'\'
+  $ cdap cli send stream diskReads \''disk1 1001'\'
+  $ cdap cli send stream diskReads \''disk1 1001'\'
+  $ cdap cli send stream diskReads \''disk1 1001'\'
+  $ cdap cli send stream diskReads \''disk1 1001'\'
+  $ cdap cli send stream diskReads \''disk1 1001'\'
 
 Next we start the service::
 
-  $ cdap-cli.sh start service DiskPerformanceApp.DiskPerformanceService
+  $ cdap cli start service DiskPerformanceApp.DiskPerformanceService
 
 The Service exposes a RESTful API that allows us to display all slow disks and the timestamp at which they were flagged as a slow disk. 
 Make the request to query slow disks::
@@ -422,7 +422,7 @@ Have a question? Discuss at the `CDAP User Mailing List <https://groups.google.c
 License
 =======
 
-Copyright © 2014-2015 Cask Data, Inc.
+Copyright © 2014-2017 Cask Data, Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may
 not use this file except in compliance with the License. You may obtain
