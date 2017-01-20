@@ -354,7 +354,7 @@ If you haven't already started a standalone CDAP installation, start it with the
 
   $ cdap sdk start
 
-We can then deploy the application::
+We can then deploy the application (adjusting the commands for the version)::
 
   $ cdap cli load artifact target/cdap-flow-guide-<version>.jar
   $ cdap cli create app DiskPerformanceApp cdap-flow-guide <version> user
@@ -382,11 +382,11 @@ We can scale out our application and increase the number of ``Tracker`` Flowlets
 Scaling your application is easy in CDAP!
 Now we can manually send enough slow disk events to the diskReads stream to get a disk classified as a slow disk::
 
-  $ cdap cli send stream diskReads \''disk1 1001'\'
-  $ cdap cli send stream diskReads \''disk1 1001'\'
-  $ cdap cli send stream diskReads \''disk1 1001'\'
-  $ cdap cli send stream diskReads \''disk1 1001'\'
-  $ cdap cli send stream diskReads \''disk1 1001'\'
+  $ cdap cli send stream diskReads '"disk1 1001"'
+  $ cdap cli send stream diskReads '"disk1 1001"'
+  $ cdap cli send stream diskReads '"disk1 1001"'
+  $ cdap cli send stream diskReads '"disk1 1001"'
+  $ cdap cli send stream diskReads '"disk1 1001"'
 
 Next we start the service::
 
@@ -395,7 +395,7 @@ Next we start the service::
 The Service exposes a RESTful API that allows us to display all slow disks and the timestamp at which they were flagged as a slow disk. 
 Make the request to query slow disks::
 
-  $ curl -w'\n' http://localhost:10000/v3/namespaces/default/apps/DiskPerformanceApp/services/DiskPerformanceService/methods/slowdisks
+  $ curl -w'\n' http://localhost:11015/v3/namespaces/default/apps/DiskPerformanceApp/services/DiskPerformanceService/methods/slowdisks
     
 Example output::
     
