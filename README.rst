@@ -10,11 +10,11 @@ What You Will Build
 You will build a CDAP application that processes disk usage information across machines in a large company in order
 to identify disks that may need to be replaced soon. You will:
 
--   Build a `Flow <http://docs.cdap.io/cdap/current/en/developers-manual/building-blocks/flows-flowlets/flows.html>`__ 
+-   Build a `Flow <https://docs.cask.co/cdap/current/en/developers-manual/building-blocks/flows-flowlets/flows.html>`__
     to process disk usage data in real time;
--   Use `Datasets <http://docs.cdap.io/cdap/current/en/developers-manual/building-blocks/datasets/index.html>`__
+-   Use `Datasets <https://docs.cask.co/cdap/current/en/developers-manual/building-blocks/datasets/index.html>`__
     to store the number of slow reads per disk and track slow disks that may need to be replaced soon; and
--   Build a `Service <http://docs.cdap.io/cdap/current/en/developers-manual/building-blocks/services.html>`__
+-   Build a `Service <https://docs.cask.co/cdap/current/en/developers-manual/building-blocks/services.html>`__
     to query via HTTP which slow disks should be replaced.
 
 
@@ -23,7 +23,7 @@ What You Will Need
 
 -   `JDK 7 or 8 <http://www.oracle.com/technetwork/java/javase/downloads/index.html>`__
 -   `Apache Maven 3.1+ <http://maven.apache.org/download.cgi>`__
--   `CDAP SDK <http://docs.cdap.io/cdap/current/en/developers-manual/getting-started/standalone/index.html>`__
+-   `CDAP Local Sandbox <https://docs.cask.co/cdap/current/en/developers-manual/getting-started/local-sandbox/index.html>`__
 
 
 Let’s Build It!
@@ -76,11 +76,11 @@ First create the application, which contains a stream, flow, and datasets.
   }
 
 Next, we create a Flow, which is composed of two Flowlets, the ``Detector`` and the ``Tracker``.
-The Detector Flowlet parses disk I/O events from the Stream and emits the disk ID if the 
+The Detector Flowlet parses disk I/O events from the Stream and emits the disk ID if the
 operation is slower than a threshold. The Tracker consumes the output of the Detector Flowlet
 and performs an analysis to detect a slow disk. Since a Tracker Flowlet performs dataset operations,
 it may be slower than a Detector Flowlet that performs all processing in memory. Thus, it's a good idea
-to have multiple Tracker Flowlet instances. 
+to have multiple Tracker Flowlet instances.
 
 In the Flow specification below, we'll start with a single
 Detector and two Tracker Flowlets.
@@ -200,7 +200,7 @@ process multiple inputs within the same transaction. That is, consume up to a sm
 This technique is called "processing with micro-batches."
 
 With a batch size of 100, we will pay the cost of the overhead just once for every 100 events instead of 100 times for 100 events.
-Telling a flowlet to process its input in batches of 100 is as simple as adding the Batch annotation to the process method.  
+Telling a flowlet to process its input in batches of 100 is as simple as adding the Batch annotation to the process method.
 
 .. code:: java
 
@@ -350,55 +350,55 @@ If this is not the case, please add it::
 
   $ export PATH=$PATH:<CDAP home>/bin
 
-If you haven't already started a standalone CDAP installation, start it with the command::
+If you haven't already started a CDAP Local Sandbox installation, start it with the command::
 
-  $ cdap.sh start
+  $ cdap sandbox start
 
 We can then deploy the application::
 
-  $ cdap-cli.sh load artifact target/cdap-flow-guide-<version>.jar
-  $ cdap-cli.sh create app DiskPerformanceApp cdap-flow-guide <version> user
+  $ cdap cli load artifact target/cdap-flow-guide-<version>.jar
+  $ cdap cli create app DiskPerformanceApp cdap-flow-guide <version> user
 
 Next we start the flow::
 
-  $ cdap-cli.sh start flow DiskPerformanceApp.DiskPerformanceFlow
+  $ cdap cli start flow DiskPerformanceApp.DiskPerformanceFlow
 
 Note that there is one instance of the ``Detector`` Flowlet running and two instances of the ``Tracker`` Flowlet running::
 
-  $ cdap-cli.sh get flowlet instances DiskPerformanceApp.DiskPerformanceFlow.slowReadDetector
+  $ cdap cli get flowlet instances DiskPerformanceApp.DiskPerformanceFlow.slowReadDetector
   1
 
-  $ cdap-cli.sh get flowlet instances DiskPerformanceApp.DiskPerformanceFlow.slowDiskTracker
+  $ cdap cli get flowlet instances DiskPerformanceApp.DiskPerformanceFlow.slowDiskTracker
   2
 
 We can scale out our application and increase the number of ``Tracker`` Flowlets to four::
 
-  $ cdap-cli.sh set flowlet instances DiskPerformanceApp.DiskPerformanceFlow.slowDiskTracker 4
+  $ cdap cli set flowlet instances DiskPerformanceApp.DiskPerformanceFlow.slowDiskTracker 4
   Successfully set flowlet 'DiskPerformanceFlow' of flow 'slowDiskTracker' of app 'DiskPerformanceApp' to 4 instances
-  
-  $ cdap-cli.sh get flowlet instances DiskPerformanceApp.DiskPerformanceFlow.slowDiskTracker
+
+  $ cdap cli get flowlet instances DiskPerformanceApp.DiskPerformanceFlow.slowDiskTracker
   4
 
 Scaling your application is easy in CDAP!
 Now we can manually send enough slow disk events to the diskReads stream to get a disk classified as a slow disk::
 
-  $ cdap-cli.sh send stream diskReads \''disk1 1001'\'
-  $ cdap-cli.sh send stream diskReads \''disk1 1001'\'
-  $ cdap-cli.sh send stream diskReads \''disk1 1001'\'
-  $ cdap-cli.sh send stream diskReads \''disk1 1001'\'
-  $ cdap-cli.sh send stream diskReads \''disk1 1001'\'
+  $ cdap cli send stream diskReads \''disk1 1001'\'
+  $ cdap cli send stream diskReads \''disk1 1001'\'
+  $ cdap cli send stream diskReads \''disk1 1001'\'
+  $ cdap cli send stream diskReads \''disk1 1001'\'
+  $ cdap cli send stream diskReads \''disk1 1001'\'
 
 Next we start the service::
 
-  $ cdap-cli.sh start service DiskPerformanceApp.DiskPerformanceService
+  $ cdap cli start service DiskPerformanceApp.DiskPerformanceService
 
-The Service exposes a RESTful API that allows us to display all slow disks and the timestamp at which they were flagged as a slow disk. 
+The Service exposes a RESTful API that allows us to display all slow disks and the timestamp at which they were flagged as a slow disk.
 Make the request to query slow disks::
 
-  $ curl -w'\n' http://localhost:10000/v3/namespaces/default/apps/DiskPerformanceApp/services/DiskPerformanceService/methods/slowdisks
-    
+  $ curl -w'\n' http://localhost:11015/v3/namespaces/default/apps/DiskPerformanceApp/services/DiskPerformanceService/methods/slowdisks
+
 Example output::
-    
+
   {"disk1":"2015-04-04 13:46:33 PDT"}
 
 
@@ -416,13 +416,13 @@ To make this application more useful, you can extend it by:
 
 Share and Discuss!
 ==================
-Have a question? Discuss at the `CDAP User Mailing List <https://groups.google.com/forum/#!forum/cdap-user>`__. 
+Have a question? Discuss at the `CDAP User Mailing List <https://groups.google.com/forum/#!forum/cdap-user>`__.
 
 
 License
 =======
 
-Copyright © 2014-2015 Cask Data, Inc.
+Copyright © 2014-2017 Cask Data, Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may
 not use this file except in compliance with the License. You may obtain
